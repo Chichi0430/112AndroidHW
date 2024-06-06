@@ -15,12 +15,11 @@ public class DisplaySelectionActivity extends AppCompatActivity {
         TextView selectedSideDish = findViewById(R.id.selected_side_dish);
         TextView selectedDrinks = findViewById(R.id.selected_drinks);
 
-        // 获取传递的数据
+
         String mainCourse = getIntent().getStringExtra("MAIN_COURSE");
         String sideDish = getIntent().getStringExtra("SIDE_DISH");
         String drinks = getIntent().getStringExtra("DRINKS");
 
-        // 设置数据到TextView
         selectedMainCourse.setText("主餐：" + mainCourse);
         selectedSideDish.setText("附餐：" + sideDish);
         selectedDrinks.setText("飲料：" + drinks);

@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
         sideDishSelection = findViewById(R.id.side_dish_selection);
         drinksSelection = findViewById(R.id.drinks_selection);
 
-        // 设置类别下拉式选择菜单的数据
+
 //        ArrayAdapter<CharSequence> categoryAdapter = ArrayAdapter.createFromResource(this,
 //                R.array.category_array, android.R.layout.simple_spinner_item);
 //        categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         categorySpinner.setAdapter(categoryAdapter);
 
 
-        // 设置类别下拉式选择菜单的监听器
+
         categorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -99,12 +99,12 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
         if (itemId == R.id.action_submit) {
-            // 获取用户选择的主餐、附餐和饮料
+
             String mainCourse = mainCourseSelection.getText().toString();
             String sideDish = sideDishSelection.getText().toString();
             String drinks = drinksSelection.getText().toString();
 
-            // 创建Intent并传递数据
+
             Intent intent = new Intent(MainActivity.this, DisplaySelectionActivity.class);
             intent.putExtra("MAIN_COURSE", mainCourse);
             intent.putExtra("SIDE_DISH", sideDish);
@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
             return true;
         } else if (itemId == R.id.action_cancel) {
-            // 重置选择
+
             mainCourseSelection.setText("請選擇");
             sideDishSelection.setText("請選擇");
             drinksSelection.setText("請選擇");

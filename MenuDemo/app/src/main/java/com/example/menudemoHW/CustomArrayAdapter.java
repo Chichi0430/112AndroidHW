@@ -28,7 +28,7 @@ public class CustomArrayAdapter extends ArrayAdapter<String> {
         }
         TextView textView = convertView.findViewById(android.R.id.text1);
         textView.setText(item);
-        textView.setTextSize(19); // 调整字体大小
+        textView.setTextSize(19);
         return convertView;
     }
 }
