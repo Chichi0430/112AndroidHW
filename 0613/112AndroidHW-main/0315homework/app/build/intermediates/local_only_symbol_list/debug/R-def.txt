@@ -1,0 +1,30 @@
+R_DEF: Internal format may change without notice
+local
+color black
+color white
+drawable ic_launcher_background
+drawable ic_launcher_foreground
+id Textaccount
+id Textpassword
+id account
+id enterbutton
+id password
+id show
+layout activity_main
+mipmap ic_launcher
+mipmap ic_launcher_round
+string Number
+string account
+string accountNumber
+string app_name
+string input_name
+string login_failure
+string login_success
+string prompt_account
+string prompt_password
+string send
+string show
+style Base.Theme._0315homework
+style Theme._0315homework
+xml backup_rules
+xml data_extraction_rules
