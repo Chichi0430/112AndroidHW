@@ -9,15 +9,19 @@ import android.widget.GridLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.math.BigDecimal;
+
 enum State {FirstNumberInput, OperatorInputed, NumberInput}
 enum OP { None, Add, Sub, Mul, Div}
 
 public class MainActivity extends AppCompatActivity {
 
-    private double theValue = 0; // 将theValue的类型改为double
-    private double operand1 = 0, operand2 = 0; // 将操作数的类型改为double
+    private BigDecimal theValue = BigDecimal.ZERO;
+    private BigDecimal operand1 = BigDecimal.ZERO, operand2 = BigDecimal.ZERO;
     private OP op = OP.None;
     private State state = State.FirstNumberInput;
+    private boolean isDecimal = false;
+    private BigDecimal decimalMultiplier = BigDecimal.valueOf(0.1);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,12 +48,10 @@ public class MainActivity extends AppCompatActivity {
     public void processKeyInput(View view) {
         Button b = (Button) view;
         String bstr = b.getText().toString();
-        double bdouble; // 使用double类型存储数字按钮的值
 
         EditText edt = findViewById(R.id.display);
 
         switch (bstr) {
-            // 数字按钮被点击时
             case "0":
             case "1":
             case "2":
@@ -60,169 +62,141 @@ public class MainActivity extends AppCompatActivity {
             case "7":
             case "8":
             case "9":
-                bdouble = Double.parseDouble(bstr); // 将文字转换为double类型
-                // 根据状态进行不同的处理
+                BigDecimal bdecimal = new BigDecimal(bstr);
                 switch (state) {
                     case FirstNumberInput:
-                        theValue = theValue * 10 + bdouble;
+                        if (isDecimal) {
+                            theValue = theValue.add(bdecimal.multiply(decimalMultiplier));
+                            decimalMultiplier = decimalMultiplier.multiply(BigDecimal.valueOf(0.1));
+                        } else {
+                            theValue = theValue.multiply(BigDecimal.TEN).add(bdecimal);
+                        }
                         break;
                     case OperatorInputed:
-                        theValue = bdouble;
-                        operand2 = bdouble;
+                        theValue = bdecimal;
+                        if (isDecimal) {
+                            theValue = theValue.multiply(decimalMultiplier);
+                            decimalMultiplier = decimalMultiplier.multiply(BigDecimal.valueOf(0.1));
+                        }
+                        operand2 = theValue;
                         state = State.NumberInput;
                         break;
                     case NumberInput:
-                        theValue = theValue * 10 + bdouble;
+                        if (isDecimal) {
+                            theValue = theValue.add(bdecimal.multiply(decimalMultiplier));
+                            decimalMultiplier = decimalMultiplier.multiply(BigDecimal.valueOf(0.1));
+                        } else {
+                            theValue = theValue.multiply(BigDecimal.TEN).add(bdecimal);
+                        }
                         break;
                 }
-                // 根据theValue是否为整数，决定显示整数或小数
-                if (theValue == Math.floor(theValue)) {
-                    edt.setText(String.valueOf((int) theValue));
-                } else {
-                    edt.setText(String.valueOf(theValue));
+                edt.setText(formatDisplayValue(theValue));
+                break;
+            case ".":
+                if (!isDecimal) {
+                    isDecimal = true;
+                    if (state == State.FirstNumberInput || state == State.NumberInput) {
+                        edt.setText(edt.getText().toString() + ".");
+                    }
                 }
                 break;
-            case "Clear": // 清除并重设相关变量
+            case "Clear":
                 state = State.FirstNumberInput;
-                theValue = 0;
+                theValue = BigDecimal.ZERO;
                 edt.setText("0");
                 op = OP.None;
-                operand2 = operand1 = 0;
+                operand2 = operand1 = BigDecimal.ZERO;
+                isDecimal = false;
+                decimalMultiplier = BigDecimal.valueOf(0.1);
                 break;
-            case "Back": // 退格键
-                theValue = (int) (theValue / 10);
-                // 根据theValue是否为整数，决定显示整数或小数
-                if (theValue == Math.floor(theValue)) {
-                    edt.setText(String.valueOf((int) theValue));
+            case "Back":
+                if (isDecimal) {
+                    theValue = theValue.setScale(theValue.scale() - 1, BigDecimal.ROUND_DOWN);
+                    decimalMultiplier = decimalMultiplier.multiply(BigDecimal.TEN);
+                    if (decimalMultiplier.compareTo(BigDecimal.ONE) == 0) {
+                        isDecimal = false;
+                    }
                 } else {
-                    edt.setText(String.valueOf(theValue));
+                    theValue = theValue.divide(BigDecimal.TEN, BigDecimal.ROUND_DOWN);
                 }
+                edt.setText(formatDisplayValue(theValue));
                 break;
             case "+":
             case "-":
             case "*":
-            case "/": // 当operator被点击时
+            case "/":
                 switch (state) {
                     case FirstNumberInput:
                         operand1 = theValue;
                         operand2 = theValue;
-                        switch (bstr) {
-                            case "+":
-                                op = OP.Add;
-                                break;
-                            case "-":
-                                op = OP.Sub;
-                                break;
-                            case "*":
-                                op = OP.Mul;
-                                break;
-                            case "/":
-                                op = OP.Div;
-                                break;
-                        }
+                        op = getOperator(bstr);
                         state = State.OperatorInputed;
                         break;
                     case OperatorInputed:
-                        switch (bstr) {
-                            case "+":
-                                op = OP.Add;
-                                break;
-                            case "-":
-                                op = OP.Sub;
-                                break;
-                            case "*":
-                                op = OP.Mul;
-                                break;
-                            case "/":
-                                op = OP.Div;
-                                break;
-                        }
+                        op = getOperator(bstr);
                         operand2 = theValue;
                         break;
                     case NumberInput:
                         operand2 = theValue;
-                        switch (op) {
-                            case Add:
-                                theValue = operand1 + operand2;
-                                break;
-                            case Sub:
-                                theValue = operand1 - operand2;
-                                break;
-                            case Mul:
-                                theValue = operand1 * operand2;
-                                break;
-                            case Div:
-                                theValue = operand1 / operand2;
-                                break;
-                        }
+                        theValue = calculateResult(operand1, operand2, op);
                         operand1 = theValue;
-                        switch (bstr) {
-                            case "+":
-                                op = OP.Add;
-                                break;
-                            case "-":
-                                op = OP.Sub;
-                                break;
-                            case "*":
-                                op = OP.Mul;
-                                break;
-                            case "/":
-                                op = OP.Div;
-                                break;
-                        }
+                        op = getOperator(bstr);
                         state = State.OperatorInputed;
-                        // 根据theValue是否为整数，决定显示整数或小数
-                        if (theValue == Math.floor(theValue)) {
-                            edt.setText(String.valueOf((int) theValue));
-                        } else {
-                            edt.setText(String.valueOf(theValue));
-                        }
+                        edt.setText(formatDisplayValue(theValue));
                         break;
                 }
+                isDecimal = false;
+                decimalMultiplier = BigDecimal.valueOf(0.1);
                 break;
-            case "=": // 当＝号被点击时，根据当前状态进行不同的处理
-                if (state == State.OperatorInputed) {
-                    switch (op) {
-                        case Add:
-                            theValue = operand1 + operand2;
-                            break;
-                        case Sub:
-                            theValue = operand1 - operand2;
-                            break;
-                        case Mul:
-                            theValue = operand1 * operand2;
-                            break;
-                        case Div:
-                            theValue = operand1 / operand2;
-                            break;
-                    }
-                    operand1 = theValue;
-                } else if (state == State.NumberInput) {
+            case "=":
+                if (state == State.OperatorInputed || state == State.NumberInput) {
                     operand2 = theValue;
-                    switch (op) {
-                        case Add:
-                            theValue = operand1 + operand2;
-                            break;
-                        case Sub:
-                            theValue = operand1 - operand2;
-                            break;
-                        case Mul:
-                            theValue = operand1 * operand2;
-                            break;
-                        case Div:
-                            theValue = operand1 / operand2;
-                            break;
-                    }
+                    theValue = calculateResult(operand1, operand2, op);
                     operand1 = theValue;
                     state = State.OperatorInputed;
+                    edt.setText(formatDisplayValue(theValue));
                 }
-                // 根据theValue是否为整数，决定显示整数或小数
-                if (theValue == Math.floor(theValue)) {
-                    edt.setText(String.valueOf((int) theValue));
-                } else {
-                    edt.setText(String.valueOf(theValue));
-                }
+                isDecimal = false;
+                decimalMultiplier = BigDecimal.valueOf(0.1);
                 break;
+        }
+    }
+
+    private OP getOperator(String opStr) {
+        switch (opStr) {
+            case "+":
+                return OP.Add;
+            case "-":
+                return OP.Sub;
+            case "*":
+                return OP.Mul;
+            case "/":
+                return OP.Div;
+            default:
+                return OP.None;
+        }
+    }
+
+    private BigDecimal calculateResult(BigDecimal operand1, BigDecimal operand2, OP op) {
+        switch (op) {
+            case Add:
+                return operand1.add(operand2);
+            case Sub:
+                return operand1.subtract(operand2);
+            case Mul:
+                return operand1.multiply(operand2);
+            case Div:
+                return operand1.divide(operand2, BigDecimal.ROUND_HALF_UP);
+            default:
+                return BigDecimal.ZERO;
+        }
+    }
+
+    private String formatDisplayValue(BigDecimal value) {
+        if (value.scale() > 0) {
+            return value.stripTrailingZeros().toPlainString();
+        } else {
+            return value.toPlainString();
         }
     }
 }
