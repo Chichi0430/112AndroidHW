@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">MenuDemo</string>
+    <string name="category_prompt">選擇類別</string>
+
+    <string-array name="category_array">
+        <item>主餐</item>
+        <item>附餐</item>
+        <item>飲料</item>
+    </string-array>
+
+    <string-array name="main_course_array">
+        <item>豬肉漢堡</item>
+        <item>牛肉漢堡</item>
+        <item>雞肉漢堡</item>
+        <item>炸魚漢堡</item>
+    </string-array>
+
+    <string-array name="side_dish_array">
+        <item>沙拉</item>
+        <item>玉米濃湯</item>
+        <item>海鮮濃湯</item>
+        <item>蘋果派</item>
+    </string-array>
+
+    <string-array name="drinks_array">
+        <item>可樂</item>
+        <item>雪碧</item>
+        <item>冰紅茶</item>
+    </string-array>
+</resources>
