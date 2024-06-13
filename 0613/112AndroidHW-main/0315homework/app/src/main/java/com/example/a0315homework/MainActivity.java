@@ -11,8 +11,8 @@ import android.widget.TextView;
 public class MainActivity extends AppCompatActivity {
 
     // 預設的帳號和密碼
-    private final String defaultAccount = "a111222027";
-    private final String defaultPassword = "930803";
+    private final String defaultAccount = "A109221258";
+    private final String defaultPassword = "900430";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
